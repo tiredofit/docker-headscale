@@ -9,7 +9,7 @@
 
 ## About
 
-This will build a Docker Image for [Headscale]([https://](https://github.com/juanfont/headscale), A mesh network.
+This will build a Docker Image for [Headscale](https://github.com/juanfont/headscale), A mesh network.
 
 ## Maintainer
 
