@@ -62,6 +62,7 @@ RUN source assets/functions/00-container && \
     \
     rm -rf /root/.cache \
            /root/.gitconfig \
+           /root/.npm \
            /root/go \
            /usr/src/*
 
