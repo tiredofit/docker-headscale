@@ -41,7 +41,7 @@ RUN source assets/functions/00-container && \
                     && \
     \
     clone_git_repo "${HEADSCALE_REPO_URL}" "${HEADSCALE_VERSION}" && \
-    go build -ldflags="-w -X github.com/juanfont/headscale/cmd/headscale/cli.Version=${HEADSCALE_VERSION}" -a ./cmd/headscale/ && \
+    CGO_ENABLED=0 go build -ldflags="-w -X github.com/juanfont/headscale/cmd/headscale/cli.Version=${HEADSCALE_VERSION}" -a ./cmd/headscale/ && \
     strip headscale && \
     mv headscale /usr/bin && \
     mkdir -p /assets/headscale && \
