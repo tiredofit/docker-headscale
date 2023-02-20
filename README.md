@@ -103,35 +103,40 @@ Be sure to view the following repositories to understand all the customizable op
 
 
 #### Container Options
-| Variable      | Value                               | Default    |
-| ------------- | ----------------------------------- | ---------- |
-| `CONFIG_PATH` |                                     | `/config/` |
-| `DATA_PATH`   |                                     | `/data/`   |
-| `LOG_PATH`    |                                     | `/logs/`   |
-| `LOG_TYPE`    |                                     | `FILE`     |
-| `MODE`        | `CLIENT` `SERVER` `STANDALONE` `UI` | `SERVER`   |
-| `SETUP_MODE`  |                                     | `AUTO`     |
+| Variable      | Value                      | Default    |
+| ------------- | -------------------------- | ---------- |
+| `CONFIG_FILE`            |                           | `headscale.yaml`      |
+| `CONFIG_PATH` |                            | `/config/` |
+| `DATA_PATH`   |                            | `/data/`   |
+| `LOG_PATH`    |                            | `/logs/`   |
+| `LOG_TYPE`    | `FILE` `CONSOLE` ` BOTH`          | `FILE`     |
+| `MODE`        | `SERVER` `STANDALONE` `UI` | `SERVER`   |
+| `SETUP_MODE`  |                            | `AUTO`     |
 
 #### Server Options
 | Variable                        | Value                     | Default               |
 | ------------------------------- | ------------------------- | --------------------- |
-| `SERVER_CONFIG_FILE`            |                           | `headscale.yaml`      |
-| `SERVER_DB_SQLITE_FILE`         |                           | `headscale.sqlite`    |
-| `SERVER_DB_TYPE`                | `sqlite3` or `postgresql` | `sqlite3`             |
-| `SERVER_GRPC_LISTEN_IP`         |                           | `127.0.0.1`           |
-| `SERVER_GRPC_LISTEN_PORT`       |                           | `50443`               |
-| `SERVER_LISTEN_IP`              |                           | `0.0.0.0`             |
-| `SERVER_LISTEN_PORT`            |                           | `8080`                |
-| `SERVER_LOG_FILE`               |                           | `server.log`          |
-| `SERVER_LOG_FORMAT`             |                           | `text`                |
-| `SERVER_LOG_LEVEL`              |                           | `INFO`                |
-| `SERVER_METRICS_LISTEN_IP`      |                           | `127.0.0.1`           |
-| `SERVER_METRICS_LISTEN_PORT`    |                           | `9090`                |
-| `SERVER_NOISE_PRIVATE_KEY_FILE` |                           | `noise_private.key`   |
-| `SERVER_PRIVATE_KEY_FILE`       |                           | `private.key`         |
-| `SOCKET_FILE`                   |                           | `headscale.sock`      |
-| `SOCKET_PATH`                   |                           | `/var/run/headspace/` |
-| `SOCKET_PERMISSION`             |                           | `0770`                |
+| `DB_HOST` | (postgres) Database Host | |
+| `DB_PORT` | (postgres) Database Port | `5432` |
+| `DB_NAME` | (postgres) Database Name | |
+| `DB_USER` | (postgres) Database User | |
+| `DB_PASS` | (postgres) Database Password | |
+| `DB_SQLITE_FILE`         | (sqlite3) Database filename                          | `headscale.sqlite`    |
+| `DB_TYPE`                | `sqlite3` or `postgresql` | `sqlite3`             |
+| `GRPC_LISTEN_IP`         | GRPC Listening IP                          | `127.0.0.1`           |
+| `GRPC_LISTEN_PORT`       | GRPC Listening Port                          | `50443`               |
+| `LISTEN_IP`              | Listen on this IP                          | `0.0.0.0`             |
+| `LISTEN_PORT`            | Headscale Listening port                          | `8080`                |
+| `LOG_FILE`               | Log file name                          | `server.log`          |
+| `LOG_FORMAT`             | `TEXT` or `JSON`                          | `text`                |
+| `LOG_LEVEL`              | `INFO` `DEBUG` `NOTICE` `ERROR`                          | `INFO`                |
+| `METRICS_LISTEN_IP`      | Metrics at `/metrics`                          | `127.0.0.1`           |
+| `METRICS_LISTEN_PORT`    | Metrics Port                          | `9090`                |
+| `NOISE_PRIVATE_KEY_FILE` | Noise Private Key                          | `noise_private.key`   |
+| `PRIVATE_KEY_FILE`       | Legacy Private Key                          | `private.key`         |
+| `SOCKET_FILE`                   | Socket name                          | `headscale.sock`      |
+| `SOCKET_PATH`                   | Socket Path                          | `/var/run/headspace/` |
+| `SOCKET_PERMISSION`             | Socket Permissions                          | `0770`                |
 
 ### Networking
 

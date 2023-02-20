@@ -5,10 +5,6 @@ bootstrap_filesystem() {
         mkdir -p "${CONFIG_PATH}"
     fi
     if [ "$(stat -c %U "${CONFIG_PATH}")" != "headscale" ] ; then chown -R headscale:headscale "${CONFIG_PATH}" ; fi
-    # Only necessary if you want to map some legacy directories
-    #if [ ! -d "/etc/randomconfig" ] ; then
-    #    ln -sf "${CONFIG_PATH}" /etc/randomconfig
-    #fi
 
     if [ ! -d "${DATA_PATH}" ]; then
         mkdir -p "${DATA_PATH}"
@@ -29,56 +25,56 @@ bootstrap_filesystem() {
 configure_server() {
     case "${LOG_TYPE,,}" in
         file )
-            create_logrotate headscale_server "${LOG_PATH}"/"${SERVER_LOG_FILE}" headscale headscale
+            create_logrotate headscale_server "${LOG_PATH}"/"${LOG_FILE}" headscale headscale
         ;;
     esac
 
     if [ "${SETUP_TYPE,,}" = "auto" ]; then
-        if [ ! -f "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}" ] ; then
-            sudo -u headscale cp -R /assets/headscale/config-example.yaml "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+        if [ ! -f "${CONFIG_PATH}"/"${CONFIG_FILE}" ] ; then
+            sudo -u headscale cp -R /assets/headscale/config-example.yaml "${CONFIG_PATH}"/"${CONFIG_FILE}"
         fi
 
         sanity_var SERVER_URL "URL that clients connect to eg https://headscale.domain.com"
         sudo -u headscale yq -i '
-                                    .server_url = "'$(echo ${SERVER_URL})'" |
-                                    .listen_addr = "'$(echo ${SERVER_LISTEN_IP}:${SERVER_LISTEN_PORT})'" |
-                                    .metrics_listen_addr = "'$(echo ${SERVER_METRICS_LISTEN_IP}:${SERVER_METRICS_LISTEN_PORT})'" |
-                                    .grpc_listen_addr = "'$(echo ${SERVER_GRPC_LISTEN_IP}:${SERVER_GRPC_LISTEN_PORT})'" |
-                                    .private_key_path = "'$(echo ${DATA_PATH}/${SERVER_PRIVATE_KEY_FILE})'" |
-                                    .noise.private_key_path = "'$(echo ${DATA_PATH}/${SERVER_NOISE_PRIVATE_KEY_FILE})'" |
+                                    .url = "'$(echo ${SERVER_URL})'" |
+                                    .listen_addr = "'$(echo ${LISTEN_IP}:${LISTEN_PORT})'" |
+                                    .metrics_listen_addr = "'$(echo ${METRICS_LISTEN_IP}:${METRICS_LISTEN_PORT})'" |
+                                    .grpc_listen_addr = "'$(echo ${GRPC_LISTEN_IP}:${GRPC_LISTEN_PORT})'" |
+                                    .private_key_path = "'$(echo ${DATA_PATH}/${PRIVATE_KEY_FILE})'" |
+                                    .noise.private_key_path = "'$(echo ${DATA_PATH}/${NOISE_PRIVATE_KEY_FILE})'" |
                                     .unix_socket = "'$(echo ${SOCKET_PATH}/${SOCKET_FILE})'" |
                                     .unix_socket_permission = "'$(echo ${SOCKET_PERMISSION})'" |
-                                    .log.format = "'$(echo ${SERVER_LOG_FORMAT})'" |
-                                    .log.level = "'$(echo ${SERVER_LOG_LEVEL})'"
-                                ' "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+                                    .log.format = "'$(echo ${LOG_FORMAT})'" |
+                                    .log.level = "'$(echo ${LOG_LEVEL})'"
+                                ' "${CONFIG_PATH}"/"${CONFIG_FILE}"
 
-        case "${SERVER_DB_TYPE,,}" in
+        case "${DB_TYPE,,}" in
             postgres* )
-                sanity_var SERVER_DB_USER "DB Username for Headscale"
-                sanity_var SERVER_DB_PASS "DB Password for Headscale"
-                sanity_var SERVER_DB_HOST "DB Host for Headscale"
-                sanity_var SERVER_DB_NAME "DB Name for Headscale"
+                sanity_var DB_USER "DB Username for Headscale"
+                sanity_var DB_PASS "DB Password for Headscale"
+                sanity_var DB_HOST "DB Host for Headscale"
+                sanity_var DB_NAME "DB Name for Headscale"
                 counter=0
-                export PGPASSWORD=${SERVER_DB_PASS}
-                until pg_isready --dbname="${SERVER_DB_NAME}" --host="${SERVER_DB_HOST}" --port="${SERVER_DB_PORT}" --username="${SERVER_DB_USER}" -q ; do
+                export PGPASSWORD=${DB_PASS}
+                until pg_isready --dbname="${DB_NAME}" --host="${DB_HOST}" --port="${DB_PORT}" --username="${DB_USER}" -q ; do
                     sleep 5
                     (( counter+=5 ))
-                    print_warn "Postgres Host '${SERVER_DB_HOST}' is not accessible, retrying.. ($counter seconds so far)"
+                    print_warn "Postgres Host '${DB_HOST}' is not accessible, retrying.. ($counter seconds so far)"
                 done
                 sudo -u headscale yq -i '
                                             .db_type = "postgres" |
-                                            .db_host = "'$(echo ${SERVER_DB_HOST})'" |
-                                            .db_port = "'$(echo ${SERVER_DB_PORT})'" |
-                                            .db_name = "'$(echo ${SERVER_DB_NAME})'" |
-                                            .db_user = "'$(echo ${SERVER_DB_USER})'" |
-                                            .db_pass = "'$(echo ${SERVER_DB_PASS})'"
-                                        ' "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+                                            .db_host = "'$(echo ${DB_HOST})'" |
+                                            .db_port = "'$(echo ${DB_PORT})'" |
+                                            .db_name = "'$(echo ${DB_NAME})'" |
+                                            .db_user = "'$(echo ${DB_USER})'" |
+                                            .db_pass = "'$(echo ${DB_PASS})'"
+                                        ' "${CONFIG_PATH}"/"${CONFIG_FILE}"
             ;;
             sqlite* )
                 sudo -u headscale yq -i '
                                             .db_type = "sqlite3" |
-                                            .db_path = "'$(echo ${DATA_PATH}/${SERVER_DB_SQLITE_FILE})'"
-                                        ' "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+                                            .db_path = "'$(echo ${DATA_PATH}/${DB_SQLITE_FILE})'"
+                                        ' "${CONFIG_PATH}"/"${CONFIG_FILE}"
 
             ;;
         esac
@@ -87,7 +83,7 @@ configure_server() {
 
 configure_ui() {
     update_template /etc/nginx/sites.available/headscale-ui.conf \
-                                                                        SERVER_LISTEN_PORT
+                                                                        LISTEN_PORT
 }
 
 setup_container_mode() {
@@ -99,10 +95,6 @@ setup_container_mode() {
         modes=$(echo "${MODE}" | tr "," "\n")
         for mode in $modes ; do
             case "${mode,,}" in
-                "client" )
-                    print_debug "Enabling Container Mode for: CLIENT"
-                    echo "ENABLE_CLIENT=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
-                ;;
                 "server" )
                     print_debug "Enabling Container Mode for: SERVER"
                     echo "ENABLE_SERVER=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE

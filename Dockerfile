@@ -11,7 +11,7 @@ ENV HEADSCALE_VERSION=v0.20.0 \
     HEADSCALEUI_VERSION=2023.01.30-beta-1 \
     HEADSCALE_REPO_URL=https://github.com/juanfont/headscale \
     HEADSCALEUI_REPO_URL=https://github.com/gurucomputing/headscale-ui \
-    #NGINX_SITE_ENABLED="headscale-ui" \
+    NGINX_SITE_ENABLED="headscale-ui" \
     NGINX_ENABLE_CREATE_SAMPLE_HTML=FALSE \
     NGINX_WORKER_PROCESSES=1 \
     IMAGE_NAME="tiredofit/headscale" \
@@ -67,7 +67,6 @@ RUN source assets/functions/00-container && \
            /root/go \
            /usr/src/*
 
-EXPOSE 2323
+EXPOSE 8080
 
 COPY install /
-

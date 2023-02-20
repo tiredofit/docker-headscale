@@ -9,12 +9,6 @@ setup_container_mode
 bootstrap_filesystem
 
 if [ ! -f "/tmp/.container/container-restart" ] ; then
-    if var_true "${ENABLE_CLIENT}" ; then
-        print_debug "Configuring Client"
-    else
-        service_stop headscale-client
-    fi
-
     if var_true "${ENABLE_SERVER}" ; then
         print_debug "Configuring Server"
         configure_server
@@ -37,7 +31,7 @@ if [ ! -f "/tmp/.container/container-restart" ] ; then
         exit 0
     fi
 
-headscale completion bash >> /root/.bashrc
+    headscale completion bash >> /root/.bashrc
 fi
 
 liftoff
