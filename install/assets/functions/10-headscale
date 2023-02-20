@@ -1,0 +1,126 @@
+#!/command/with-contenv bash
+
+bootstrap_filesystem() {
+    if [ ! -d "${CONFIG_PATH}" ]; then
+        mkdir -p "${CONFIG_PATH}"
+    fi
+    if [ "$(stat -c %U "${CONFIG_PATH}")" != "headscale" ] ; then chown -R headscale:headscale "${CONFIG_PATH}" ; fi
+    # Only necessary if you want to map some legacy directories
+    #if [ ! -d "/etc/randomconfig" ] ; then
+    #    ln -sf "${CONFIG_PATH}" /etc/randomconfig
+    #fi
+
+    if [ ! -d "${DATA_PATH}" ]; then
+        mkdir -p "${DATA_PATH}"
+    fi
+    if [ "$(stat -c %U "${DATA_PATH}")" != "headscale" ] ; then chown headscale:headscale "${DATA_PATH}" ; fi
+
+    if [ ! -d "${LOG_PATH}" ]; then
+        mkdir -p "${LOG_PATH}"
+    fi
+    if [ "$(stat -c %U "${LOG_PATH}")" != "headscale" ] ; then chown -R headscale:headscale "${LOG_PATH}" ; fi
+
+    if [ ! -d "${SOCKET_PATH}" ]; then
+        mkdir -p "${SOCKET_PATH}"
+    fi
+    if [ "$(stat -c %U "${SOCKET_PATH}")" != "headscale" ] ; then chown -R headscale:headscale "${SOCKET_PATH}" ; fi
+}
+
+configure_server() {
+    case "${LOG_TYPE,,}" in
+        file )
+            create_logrotate headscale_server "${LOG_PATH}"/"${SERVER_LOG_FILE}" headscale headscale
+        ;;
+    esac
+
+    if [ "${SETUP_TYPE,,}" = "auto" ]; then
+        if [ ! -f "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}" ] ; then
+            sudo -u headscale cp -R /assets/headscale/config-example.yaml "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+        fi
+
+        sanity_var SERVER_URL "URL that clients connect to eg https://headscale.domain.com"
+        sudo -u headscale yq -i '
+                                    .server_url = "'$(echo ${SERVER_URL})'" |
+                                    .listen_addr = "'$(echo ${SERVER_LISTEN_IP}:${SERVER_LISTEN_PORT})'" |
+                                    .metrics_listen_addr = "'$(echo ${SERVER_METRICS_LISTEN_IP}:${SERVER_METRICS_LISTEN_PORT})'" |
+                                    .grpc_listen_addr = "'$(echo ${SERVER_GRPC_LISTEN_IP}:${SERVER_GRPC_LISTEN_PORT})'" |
+                                    .private_key_path = "'$(echo ${DATA_PATH}/${SERVER_PRIVATE_KEY_FILE})'" |
+                                    .noise.private_key_path = "'$(echo ${DATA_PATH}/${SERVER_NOISE_PRIVATE_KEY_FILE})'" |
+                                    .unix_socket = "'$(echo ${SOCKET_PATH}/${SOCKET_FILE})'" |
+                                    .unix_socket_permission = "'$(echo ${SOCKET_PERMISSION})'" |
+                                    .log.format = "'$(echo ${SERVER_LOG_FORMAT})'" |
+                                    .log.level = "'$(echo ${SERVER_LOG_LEVEL})'"
+                                ' "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+
+        case "${SERVER_DB_TYPE,,}" in
+            postgres* )
+                sanity_var SERVER_DB_USER "DB Username for Headscale"
+                sanity_var SERVER_DB_PASS "DB Password for Headscale"
+                sanity_var SERVER_DB_HOST "DB Host for Headscale"
+                sanity_var SERVER_DB_NAME "DB Name for Headscale"
+                counter=0
+                export PGPASSWORD=${SERVER_DB_PASS}
+                until pg_isready --dbname="${SERVER_DB_NAME}" --host="${SERVER_DB_HOST}" --port="${SERVER_DB_PORT}" --username="${SERVER_DB_USER}" -q ; do
+                    sleep 5
+                    (( counter+=5 ))
+                    print_warn "Postgres Host '${SERVER_DB_HOST}' is not accessible, retrying.. ($counter seconds so far)"
+                done
+                sudo -u headscale yq -i '
+                                            .db_type = "postgres" |
+                                            .db_host = "'$(echo ${SERVER_DB_HOST})'" |
+                                            .db_port = "'$(echo ${SERVER_DB_PORT})'" |
+                                            .db_name = "'$(echo ${SERVER_DB_NAME})'" |
+                                            .db_user = "'$(echo ${SERVER_DB_USER})'" |
+                                            .db_pass = "'$(echo ${SERVER_DB_PASS})'"
+                                        ' "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+            ;;
+            sqlite* )
+                sudo -u headscale yq -i '
+                                            .db_type = "sqlite3" |
+                                            .db_path = "'$(echo ${DATA_PATH}/${SERVER_DB_SQLITE_FILE})'"
+                                        ' "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}"
+
+            ;;
+        esac
+    fi
+}
+
+configure_ui() {
+    update_template /etc/nginx/sites.available/headscale-ui.conf \
+                                                                        SERVER_LISTEN_PORT
+}
+
+setup_container_mode() {
+    if [ -f "/tmp/.container/toi_hs/CONTAINER_MODE" ]; then
+        print_debug "Importing MODE environment generated variables"
+        source /tmp/.container/toi_hs/CONTAINER_MODE
+    else
+        mkdir -p /tmp/.container/toi_hs/
+        modes=$(echo "${MODE}" | tr "," "\n")
+        for mode in $modes ; do
+            case "${mode,,}" in
+                "client" )
+                    print_debug "Enabling Container Mode for: CLIENT"
+                    echo "ENABLE_CLIENT=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
+                ;;
+                "server" )
+                    print_debug "Enabling Container Mode for: SERVER"
+                    echo "ENABLE_SERVER=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
+                ;;
+                "standalone" | "manual" )
+                    print_debug "Enabling Container Mode for: STANDALONE"
+                    echo "ENABLE_STANDALONE=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
+                ;;
+                "ui" )
+                    print_debug "Enabling Container Mode for: UI"
+                    echo "ENABLE_UI=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
+                ;;
+                *)
+                    print_error "Unknown 'MODE' environment variable - exitting.."
+                    exit 1
+                ;;
+            esac
+        done
+        source /tmp/.container/toi_hs/CONTAINER_MODE
+    fi
+}

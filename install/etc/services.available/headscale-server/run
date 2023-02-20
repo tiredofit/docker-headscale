@@ -1,0 +1,23 @@
+#!/command/with-contenv bash
+
+source /assets/functions/00-container
+PROCESS_NAME="headscale-server"
+source /assets/defaults/10-headscale
+source /assets/functions/10-headscale
+check_container_initialized
+
+liftoff
+
+case "${SERVER_LOG_TYPE}" in
+    console )
+        SHOW_OUTPUT=TRUE
+    ;;
+esac
+
+print_start "Starting Headscale Server ${HEADSCALE_VERSION}"
+exec s6-setuidgid headscale \
+                                headscale \
+                                            --config "${CONFIG_PATH}"/"${SERVER_CONFIG_FILE}" \
+                                            serve \
+                                            |  silent s6-setuidgid headscale tee -a "${LOG_PATH}"/"${SERVER_LOG_FILE}"
+
