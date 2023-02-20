@@ -30,6 +30,7 @@ RUN source assets/functions/00-container && \
     package update && \
     package upgrade && \
     package install .headscale-build-deps \
+                    binutils \
                     git \
                     go \
                     make \
