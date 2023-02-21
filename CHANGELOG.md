@@ -1,3 +1,11 @@
+## 0.2.0 2023-02-20 <dave at tiredofit dot ca>
+
+   ### Added
+      - Change variables around (Drop SERVER_)
+      - Rework package installation to support armv7/arm64
+      - Drop Client Mode
+
+
 ## 0.1.0 2023-02-20 <dave at tiredofit dot ca>
 
    ### Added

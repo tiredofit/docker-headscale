@@ -20,7 +20,7 @@ services:
       - SETUP_TYPE=AUTO
 
       - MODE=SERVER,UI
-      - SERVER_LISTEN_PORT=8080
+      - LISTEN_PORT=8080
       - SERVER_URL=https://headscale.example.com
     networks:
       - proxy
