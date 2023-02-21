@@ -1,3 +1,9 @@
+## 0.2.1 2023-02-21 <dave at tiredofit dot ca>
+
+   ### Added
+      - Add helper to map config
+
+
 ## 0.2.0 2023-02-20 <dave at tiredofit dot ca>
 
    ### Added

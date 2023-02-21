@@ -6,6 +6,11 @@ bootstrap_filesystem() {
     fi
     if [ "$(stat -c %U "${CONFIG_PATH}")" != "headscale" ] ; then chown -R headscale:headscale "${CONFIG_PATH}" ; fi
 
+    if [ ! -d "/etc/headscale" ]; then
+        mkdir -p /etc/headscale
+    fi
+    if [ "$(stat -c %U "/etc/headscale")" != "headscale" ] ; then chown -R headscale:headscale "/etc/headscale" ; fi
+
     if [ ! -d "${DATA_PATH}" ]; then
         mkdir -p "${DATA_PATH}"
     fi
@@ -32,6 +37,10 @@ configure_server() {
     if [ "${SETUP_TYPE,,}" = "auto" ]; then
         if [ ! -f "${CONFIG_PATH}"/"${CONFIG_FILE}" ] ; then
             sudo -u headscale cp -R /assets/headscale/config-example.yaml "${CONFIG_PATH}"/"${CONFIG_FILE}"
+        fi
+
+        if [ ! -f "/etc/headscale/config.yaml" ] ; then
+            ln -sf "${CONFIG_PATH}"/"${CONFIG_FILE}" /etc/headscale/config.yaml
         fi
 
         sanity_var SERVER_URL "URL that clients connect to eg https://headscale.domain.com"

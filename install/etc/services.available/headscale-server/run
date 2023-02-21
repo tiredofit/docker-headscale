@@ -15,7 +15,7 @@ case "${LOG_TYPE}" in
     console)
         LOG_PATH=/dev
         LOG_FILE=null
-          SHOW_OUTPUT=TRUE
+        SHOW_OUTPUT=TRUE
     ;;
 esac
 
