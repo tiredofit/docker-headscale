@@ -5,6 +5,7 @@ set -a
 prepare_service
 PROCESS_NAME="headscale"
 set +a
+
 setup_container_mode
 bootstrap_filesystem
 
@@ -15,7 +16,6 @@ if [ ! -f "/tmp/.container/container-restart" ] ; then
     else
         service_stop headscale-server
     fi
-
     if var_true "${ENABLE_UI}" ; then
         print_debug "Configuring UI"
         configure_ui

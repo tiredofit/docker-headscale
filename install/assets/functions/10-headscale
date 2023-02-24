@@ -45,7 +45,7 @@ configure_server() {
 
         sanity_var SERVER_URL "URL that clients connect to eg https://headscale.domain.com"
         sudo -u headscale yq -i '
-                                    .url = "'$(echo ${SERVER_URL})'" |
+                                    .server_url = "'$(echo ${SERVER_URL})'" |
                                     .listen_addr = "'$(echo ${LISTEN_IP}:${LISTEN_PORT})'" |
                                     .metrics_listen_addr = "'$(echo ${METRICS_LISTEN_IP}:${METRICS_LISTEN_PORT})'" |
                                     .grpc_listen_addr = "'$(echo ${GRPC_LISTEN_IP}:${GRPC_LISTEN_PORT})'" |
