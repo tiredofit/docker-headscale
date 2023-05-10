@@ -59,6 +59,12 @@ configure_server() {
 
         case "${DB_TYPE,,}" in
             postgres* )
+                transform_file_var \
+                                    DB_USER \
+                                    DB_PASS \
+                                    DB_HOST \
+                                    DB_PORT \
+                                    DB_NAME
                 sanity_var DB_USER "DB Username for Headscale"
                 sanity_var DB_PASS "DB Password for Headscale"
                 sanity_var DB_HOST "DB Host for Headscale"
@@ -111,10 +117,6 @@ setup_container_mode() {
                 "standalone" | "manual" )
                     print_debug "Enabling Container Mode for: STANDALONE"
                     echo "ENABLE_STANDALONE=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
-                ;;
-                "ui" )
-                    print_debug "Enabling Container Mode for: UI"
-                    echo "ENABLE_UI=TRUE" >> /tmp/.container/toi_hs/CONTAINER_MODE
                 ;;
                 *)
                     print_error "Unknown 'MODE' environment variable - exitting.."

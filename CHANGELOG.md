@@ -1,3 +1,10 @@
+## 0.3.0 2023-05-10 <dave at tiredofit dot ca>
+
+   ### Added
+      - Alpine 3.18 base
+      - Headscale 0.22.1
+
+
 ## 0.2.1 2023-02-21 <dave at tiredofit dot ca>
 
    ### Added

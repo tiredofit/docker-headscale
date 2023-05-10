@@ -16,14 +16,6 @@ if [ ! -f "/tmp/.container/container-restart" ] ; then
     else
         service_stop headscale-server
     fi
-    if var_true "${ENABLE_UI}" ; then
-        print_debug "Configuring UI"
-        configure_ui
-    else
-        service_stop 10-nginx
-        service_stop 11-nginx-config-reload
-        rm -rf /etc/zabbix/zabbix_agentd.conf.d/nginx.conf
-    fi
 
     if var_true "${ENABLE_STANDALONE}" ; then
         print_debug "Configuring Standlone"

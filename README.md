@@ -93,7 +93,7 @@ The following directories are used for configuration and can be mapped for persi
 
 #### Base Images used
 
-This image relies on an [Alpine Linux](https://hub.docker.com/r/tiredofit/alpine) base image that relies on an [init system](https://github.com/just-containers/s6-overlay) for added capabilities. Outgoing SMTP capabilities are handlded via `msmtp`. Individual container performance monitoring is performed by [zabbix-agent](https://zabbix.org). Additional tools include: `bash`,`curl`,`less`,`logrotate`,`nano`,`vim`.
+This image relies on an [Alpine Linux](https://hub.docker.com/r/tiredofit/alpine) base image that relies on an [init system](https://github.com/just-containers/s6-overlay) for added capabilities. Outgoing SMTP capabilities are handlded via `msmtp`. Individual container performance monitoring is performed by [zabbix-agent](https://zabbix.org). Additional tools include: `bash`,`curl`,`less`,`logrotate`,`nano`.
 
 Be sure to view the following repositories to understand all the customizable options:
 
@@ -103,47 +103,46 @@ Be sure to view the following repositories to understand all the customizable op
 
 
 #### Container Options
-| Variable      | Value                      | Default          |
-| ------------- | -------------------------- | ---------------- |
-| `CONFIG_FILE` |                            | `headscale.yaml` |
-| `CONFIG_PATH` |                            | `/config/`       |
-| `DATA_PATH`   |                            | `/data/`         |
-| `LOG_PATH`    |                            | `/logs/`         |
-| `LOG_TYPE`    | `FILE` `CONSOLE` ` BOTH`   | `FILE`           |
-| `MODE`        | `SERVER` `STANDALONE` `UI` | `SERVER`         |
-| `SETUP_MODE`  |                            | `AUTO`           |
+| Variable      | Value                    | Default          |
+| ------------- | ------------------------ | ---------------- |
+| `CONFIG_FILE` |                          | `headscale.yaml` |
+| `CONFIG_PATH` |                          | `/config/`       |
+| `DATA_PATH`   |                          | `/data/`         |
+| `LOG_PATH`    |                          | `/logs/`         |
+| `LOG_TYPE`    | `FILE` `CONSOLE` ` BOTH` | `FILE`           |
+| `MODE`        | `SERVER` `STANDALONE`    | `SERVER`         |
+| `SETUP_MODE`  |                          | `AUTO`           |
 
 #### Server Options
-| Variable                 | Value                           | Default               |
-| ------------------------ | ------------------------------- | --------------------- |
-| `DB_HOST`                | (postgres) Database Host        |                       |
-| `DB_PORT`                | (postgres) Database Port        | `5432`                |
-| `DB_NAME`                | (postgres) Database Name        |                       |
-| `DB_USER`                | (postgres) Database User        |                       |
-| `DB_PASS`                | (postgres) Database Password    |                       |
-| `DB_SQLITE_FILE`         | (sqlite3) Database filename     | `headscale.sqlite`    |
-| `DB_TYPE`                | `sqlite3` or `postgresql`       | `sqlite3`             |
-| `GRPC_LISTEN_IP`         | GRPC Listening IP               | `127.0.0.1`           |
-| `GRPC_LISTEN_PORT`       | GRPC Listening Port             | `50443`               |
-| `LISTEN_IP`              | Listen on this IP               | `0.0.0.0`             |
-| `LISTEN_PORT`            | Headscale Listening port        | `8080`                |
-| `LOG_FILE`               | Log file name                   | `server.log`          |
-| `LOG_FORMAT`             | `TEXT` or `JSON`                | `text`                |
-| `LOG_LEVEL`              | `INFO` `DEBUG` `NOTICE` `ERROR` | `INFO`                |
-| `METRICS_LISTEN_IP`      | Metrics at `/metrics`           | `127.0.0.1`           |
-| `METRICS_LISTEN_PORT`    | Metrics Port                    | `9090`                |
-| `NOISE_PRIVATE_KEY_FILE` | Noise Private Key               | `noise_private.key`   |
-| `PRIVATE_KEY_FILE`       | Legacy Private Key              | `private.key`         |
-| `SOCKET_FILE`            | Socket name                     | `headscale.sock`      |
-| `SOCKET_PATH`            | Socket Path                     | `/var/run/headspace/` |
-| `SOCKET_PERMISSION`      | Socket Permissions              | `0770`                |
+| Variable                 | Value                           | Default               | `_FILE` |
+| ------------------------ | ------------------------------- | --------------------- | ------- |
+| `DB_HOST`                | (postgres) Database Host        |                       | x       |
+| `DB_PORT`                | (postgres) Database Port        | `5432`                | x       |
+| `DB_NAME`                | (postgres) Database Name        |                       | x       |
+| `DB_USER`                | (postgres) Database User        |                       | x       |
+| `DB_PASS`                | (postgres) Database Password    |                       | x       |
+| `DB_SQLITE_FILE`         | (sqlite3) Database filename     | `headscale.sqlite`    |         |
+| `DB_TYPE`                | `sqlite3` or `postgresql`       | `sqlite3`             |         |
+| `GRPC_LISTEN_IP`         | GRPC Listening IP               | `127.0.0.1`           |         |
+| `GRPC_LISTEN_PORT`       | GRPC Listening Port             | `50443`               |         |
+| `LISTEN_IP`              | Listen on this IP               | `0.0.0.0`             |         |
+| `LISTEN_PORT`            | Headscale Listening port        | `8080`                |         |
+| `LOG_FILE`               | Log file name                   | `server.log`          |         |
+| `LOG_FORMAT`             | `TEXT` or `JSON`                | `text`                |         |
+| `LOG_LEVEL`              | `INFO` `DEBUG` `NOTICE` `ERROR` | `INFO`                |         |
+| `METRICS_LISTEN_IP`      | Metrics at `/metrics`           | `127.0.0.1`           |         |
+| `METRICS_LISTEN_PORT`    | Metrics Port                    | `9090`                |         |
+| `NOISE_PRIVATE_KEY_FILE` | Noise Private Key               | `noise_private.key`   |         |
+| `PRIVATE_KEY_FILE`       | Legacy Private Key              | `private.key`         |         |
+| `SOCKET_FILE`            | Socket name                     | `headscale.sock`      |         |
+| `SOCKET_PATH`            | Socket Path                     | `/var/run/headspace/` |         |
+| `SOCKET_PERMISSION`      | Socket Permissions              | `0770`                |         |
 
 ### Networking
 
 | Port   | Protocol | Description        |
 | ------ | -------- | ------------------ |
 | `8080` | `tcp`    | Headscale Server   |
-| `80`   | `tcp`    | Nginx Headscale UI |
 
 ## Maintenance
 ### Shell Access
