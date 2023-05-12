@@ -1,3 +1,9 @@
+## 0.3.2 2023-05-12 <dave at tiredofit dot ca>
+
+   ### Added
+      - Headscale 0.22.3
+
+
 ## 0.3.1 2023-05-10 <dave at tiredofit dot ca>
 
    ### Added

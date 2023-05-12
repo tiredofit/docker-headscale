@@ -6,7 +6,7 @@ LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ARG HEADSCALE_VERSION
 
-ENV HEADSCALE_VERSION=v0.22.2 \
+ENV HEADSCALE_VERSION=v0.22.3 \
     HEADSCALE_REPO_URL=https://github.com/juanfont/headscale \
     IMAGE_NAME="tiredofit/headscale" \
     IMAGE_REPO_URL="https://github.com/tiredofit/headscale/"
